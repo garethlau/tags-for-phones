@@ -3,10 +3,12 @@ import 'package:flutter/semantics.dart';
 import 'package:tags/pages/login_signup_page.dart';
 import 'package:tags/services/auth.dart';
 import 'package:tags/pages/home_page.dart';
+import 'package:tags/pages/onboard_page.dart';
 
 class RootPage extends StatefulWidget {
-  RootPage({this.auth});
   final BaseAuth auth;
+  bool showOnboard;
+  RootPage({this.auth});
 
   @override
   State<StatefulWidget> createState() => new _RootPageState();
@@ -53,6 +55,13 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
+  void _changeOnboardStatus() {
+    setState(() {
+      widget.showOnboard = true;
+    });
+    print("SHOW THE ONBOARDING SCREEN");
+  }
+
   Widget _buildWaitingScreen() {
     return Scaffold(
       body: Container(
@@ -72,10 +81,17 @@ class _RootPageState extends State<RootPage> {
         return LoginSignUpPage(
           auth: widget.auth,
           onSignedIn: _onLoggedIn,
+          changeOnboardStatus: _changeOnboardStatus,
         );
         break;
       case AuthStatus.LOGGED_IN:
         if (_userId != null && _userId.length > 0) {
+          if (true) { // replace true with widget.showOnboard
+            return OnboardPage(
+              userId: _userId,
+              auth: widget.auth,
+            );
+          }
           return HomePage(
             userId: _userId,
             auth: widget.auth,

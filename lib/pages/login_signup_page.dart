@@ -5,7 +5,8 @@ import 'package:tags/services/auth.dart';
 class LoginSignUpPage extends StatefulWidget {
   final BaseAuth auth;
   final VoidCallback onSignedIn;
-  LoginSignUpPage({this.auth, this.onSignedIn});
+  final VoidCallback changeOnboardStatus;
+  LoginSignUpPage({this.auth, this.onSignedIn, this.changeOnboardStatus});
 
   @override
   State<StatefulWidget> createState() => new _LoginSignUpPageState();
@@ -93,6 +94,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>{
           print("Signed up user: $userId");
         }
         if (userId != null && userId.length > 0) {
+          if (_formMode == FormMode.SIGNUP) {
+            widget.changeOnboardStatus();
+          }
           widget.onSignedIn();
         }
         setState(() {
