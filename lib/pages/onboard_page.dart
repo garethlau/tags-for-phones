@@ -3,6 +3,7 @@ import 'package:tags/pages/onboard_form/contact_details_form.dart';
 import 'package:tags/services/auth.dart';
 import 'package:tags/models/profile.dart';
 import 'package:tags/pages/onboard_form/personal_details_form.dart';
+import 'package:tags/pages/onboard_form/profile_builder_form.dart';
 
 class OnboardPage extends StatefulWidget {
   final BaseAuth auth;
@@ -30,21 +31,26 @@ class _OnboardPageState extends State<OnboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Welcome to Tags"),
-      ),
-      body: PageView(
-        controller: _pageController,
-        children: <Widget>[
-          PersonalDetailsForm(widget.userId, nextPage),
-          ContactDetailsForm(widget.userId, nextPage, prevPage),
-        ],
-        physics: NeverScrollableScrollPhysics(),
-      ),
+        appBar: AppBar(
+          title: Text(
+            "Welcome to Tags",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            )
+          ),
+        ),
+        body: PageView(
+          controller: _pageController,
+          children: <Widget>[
+            PersonalDetailsForm(widget.auth, nextPage),
+            ContactDetailsForm(widget.auth, nextPage, prevPage),
+            ProfileBuilderForm(widget.auth, nextPage, prevPage),
+          ],
+          physics: NeverScrollableScrollPhysics(),
+        ),
     );
   }
-
-
 
   _showDialog(BuildContext context) {
     Scaffold.of(context).showSnackBar(

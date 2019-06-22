@@ -14,6 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tags',
       home: RootPage(auth: new Auth()),
+      theme: ThemeData(
+        primaryColor: Colors.yellow[600],
+        accentColor: Colors.green,
+      ),
     );
   }
 }

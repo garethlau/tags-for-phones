@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tags/services/auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:async';
+import 'dart:io';
 
-
-class ContactDetailsForm extends StatefulWidget {
+class ProfileBuilderForm extends StatefulWidget {
   final BaseAuth auth;
   final VoidCallback nextPage;
   final VoidCallback prevPage;
 
-  ContactDetailsForm(this.auth, this.nextPage, this.prevPage);
+  ProfileBuilderForm(this.auth, this.nextPage, this.prevPage);
   
   @override
-  State<StatefulWidget> createState() => _ContactDetailsForm();
+  State<StatefulWidget> createState() => _ProfileBuilderForm();
 }
 
-class _ContactDetailsForm extends State<ContactDetailsForm> {
+class _ProfileBuilderForm extends State<ProfileBuilderForm> {
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _textFieldPadding = EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0);
+
+  File image;
+  Future getImage() async {
+    print("=== IMAGE PICKER ===");
+    File picture = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 300.0,
+      maxHeight: 300.0,
+    );
+    setState(() {
+      image = picture;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,38 +41,67 @@ class _ContactDetailsForm extends State<ContactDetailsForm> {
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: InkWell(
+                  child: Container(
+                    color: Colors.green,
+                    width: MediaQuery.of(context).size.width / 1.5,
+                    height: MediaQuery.of(context).size.width / 1.5,
+                  ),
+                onTap: getImage,
+                ),
+              ) 
+            ), 
             Padding(
               padding: _textFieldPadding,
               child: TextFormField(
-                decoration: InputDecoration(labelText: "Email"),
-                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(labelText: "First name"),
                 validator: (value) {
                   if (value.isEmpty) {
                     return "Please enter your first name";
                   }
                 },
                 onSaved: (value) {
-                  _updateProfile({"emal": value});
+                  _updateProfile({"firstName": value});
                 },
               ),
             ),
             Padding(
-              padding: _textFieldPadding,
+              padding: _textFieldPadding, 
               child: TextFormField(
-                decoration: InputDecoration(labelText: "Phone Number"),
-                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: "Last name"),
                 validator: (value) {
                   if (value.isEmpty) {
                     return "Please enter your last name";
                   }
                 },
                 onSaved: (value) {
-                  _updateProfile({"phone": value});
+                  _updateProfile({"firstName": value});
                 },
               ),
             ),
-            Align(
+            Padding(
+              padding: _textFieldPadding,
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: "Title",
+                  
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please enter your title";
+                  }
+                },
+                onSaved: (value) {
+                  _updateProfile({"firstName": value});
+                },
+              ),
+            ),
+           Align(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -108,11 +152,10 @@ class _ContactDetailsForm extends State<ContactDetailsForm> {
       )
     );
   }
-
   _updateProfile(newValues) async {
     var user = await widget.auth.getCurrentUser();
     var token = await user.getIdToken();
-    print("=== UPDATING === "  + token.substring(0, 10));
+    print("=== UPDATING === " + token.substring(0, 10));
     Firestore.instance
     .collection("test-for-dev")
     .document(token)

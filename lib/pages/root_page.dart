@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:tags/pages/login_signup_page.dart';
@@ -7,7 +8,6 @@ import 'package:tags/pages/onboard_page.dart';
 
 class RootPage extends StatefulWidget {
   final BaseAuth auth;
-  bool showOnboard;
   RootPage({this.auth});
 
   @override
@@ -23,6 +23,7 @@ enum AuthStatus {
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   String _userId = "";
+  bool showOnboard = false;
 
   @override
   void initState() {
@@ -55,11 +56,18 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
-  void _changeOnboardStatus() {
-    setState(() {
-      widget.showOnboard = true;
-    });
+  void _changeOnboardStatus () async {
     print("SHOW THE ONBOARDING SCREEN");
+    setState(() {
+      showOnboard = true;
+    });
+
+    var user = await widget.auth.getCurrentUser();
+    var token = await user.getIdToken();
+    Firestore.instance.collection("test-for-dev").document(token).setData({
+      "email": user.email,
+      "image": user.photoUrl,
+    });
   }
 
   Widget _buildWaitingScreen() {
@@ -86,7 +94,7 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.LOGGED_IN:
         if (_userId != null && _userId.length > 0) {
-          if (true) { // replace true with widget.showOnboard
+          if (showOnboard) { // replace true with widget.showOnboard
             return OnboardPage(
               userId: _userId,
               auth: widget.auth,
