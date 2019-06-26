@@ -63,8 +63,8 @@ class _RootPageState extends State<RootPage> {
     });
 
     var user = await widget.auth.getCurrentUser();
-    var token = await user.getIdToken();
-    Firestore.instance.collection("test-for-dev").document(token).setData({
+    String email = user.email;
+    Firestore.instance.collection("test-for-dev").document(email).setData({
       "email": user.email,
       "image": user.photoUrl,
     });
@@ -94,7 +94,7 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.LOGGED_IN:
         if (_userId != null && _userId.length > 0) {
-          if (showOnboard) { // replace true with widget.showOnboard
+          if (true) { // replace true with showOnboard
             return OnboardPage(
               userId: _userId,
               auth: widget.auth,

@@ -103,11 +103,9 @@ class _PersonalDetailsForm extends State<PersonalDetailsForm> {
   }
   _updateProfile(newValues) async {
     var user = await widget.auth.getCurrentUser();
-    var token = await user.getIdToken();
-    print("=== UPDATING === " + token.substring(0, 10));
     Firestore.instance
     .collection("test-for-dev")
-    .document(token)
+    .document(user.email.toString())
     .updateData(newValues)
     .catchError((e) {
       print(e);

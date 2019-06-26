@@ -35,7 +35,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>{
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Flutter login demo"),
+        title: new Text(""),
       ),
       body: ListView(
         shrinkWrap: true,
@@ -192,7 +192,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>{
         elevation: 5.0,
         minWidth: 200.0,
         height: 42.0,
-        color: Colors.blue,
+        color: Colors.yellow[600],
         child: _formMode == FormMode.LOGIN 
           ? Text(
             "Login",
