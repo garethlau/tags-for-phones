@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tags/services/auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -16,23 +17,43 @@ class ProfileBuilderForm extends StatefulWidget {
   State<StatefulWidget> createState() => _ProfileBuilderForm();
 }
 
-class _ProfileBuilderForm extends State<ProfileBuilderForm> {
 
+class _ProfileBuilderForm extends State<ProfileBuilderForm> {
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _textFieldPadding = EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0);
 
   File image;
-  Future getImage() async {
+  Future<Null> getImage() async {
     print("=== IMAGE PICKER ===");
     File picture = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxWidth: 300.0,
+      source: ImageSource.gallery,
+      maxWidth: 200.0,
       maxHeight: 300.0,
     );
     setState(() {
       image = picture;
     });
+    cropImage();
   }
+
+  Future<Null> cropImage() async {
+    File croppedFile = await ImageCropper.cropImage(
+      sourcePath: image.path,
+      toolbarTitle: "Cropper",
+      toolbarColor: Colors.yellow[600],
+      toolbarWidgetColor: Colors.white,
+      maxWidth: 300,
+      maxHeight: 300,
+      ratioX: 1.0,
+      ratioY: 1.0,
+    );
+    if (croppedFile != null) {
+      setState(() {
+        image = croppedFile;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,18 +65,45 @@ class _ProfileBuilderForm extends State<ProfileBuilderForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Center(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: InkWell(
-                  child: Container(
-                    color: Colors.green,
-                    width: MediaQuery.of(context).size.width / 1.5,
-                    height: MediaQuery.of(context).size.width / 1.5,
-                  ),
-                onTap: getImage,
-                ),
-              ) 
-            ), 
+              child: Container(
+                width: 250,
+                height: 250,
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: image == null
+                  ? Container(
+                      child: FlutterLogo(
+                      ),
+                    )
+                  : InkWell(
+                      child: Image.file(image),
+                      onTap: () {
+                        getImage();
+                      },
+                    ), 
+                ) 
+              )
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+              child: RaisedButton(
+                color: Colors.yellow[600],
+                child: image == null
+                ? Text("Upload image", style: TextStyle(color: Colors.white),)
+                : Text("Remove image", style: TextStyle(color: Colors.white),),
+                onPressed: () {
+                  if (image == null) {
+                    getImage();
+                  }
+                  else {
+                    setState(() {
+                      image = null;
+                    });
+                  }
+                }
+              ),
+            ),
+             
             Padding(
               padding: _textFieldPadding,
               child: TextFormField(
